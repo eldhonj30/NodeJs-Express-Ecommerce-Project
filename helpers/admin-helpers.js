@@ -771,6 +771,7 @@ module.exports = {
               totalAmount: { $sum: "$totalAmount" },
             },
           },
+          {$sort:{"_id":1}},
         ])
         .toArray((err, result) => {
           if (err) {
