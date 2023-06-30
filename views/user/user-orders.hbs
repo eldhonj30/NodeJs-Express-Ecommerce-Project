@@ -1,0 +1,82 @@
+<div class="d-flex justify-content-center text-center">
+  <div class="h4 d-flex align-items-center mt-2"><b>Order History</b></div>
+</div>
+
+<div class="d-flex justify-content-center text-start">
+  <table class="table table-success table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Date</th>
+        <th scope="col">Delivery<br>Address</th>
+        <th scope="col">Total Amount</th>
+        <th scope="col">Payment Mode</th>
+        <th scope="col">Product & status</th>
+        <th scope="col">Invoice</th>
+        <th scope="col">Options</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each orderDetails}}
+      <tr>
+        <th scope="row">{{this.pDate}}</th>
+        <td>Name: {{this.deliveryDetails.fullName}}<br>Address: {{this.deliveryDetails.address}}</td>
+        <td>{{this.totalAmount}}</td>
+        <td>{{this.paymentMethod}}</td>
+        <td>
+          {{#each this.products}}
+          {{this.name}}<br>
+
+          {{#if (eq this.status 'Cancelled')}}
+          <div>
+            <b style="color: red;">{{this.status}}</b>
+          </div>
+
+          {{else if (eq this.status 'placed')}}
+          <div>
+            <b style="color: #0022ff;">{{this.status}}</b>
+          </div>
+
+          {{else if (eq this.status 'Return')}}
+          <b style="color: #ff0000;">{{this.status}}</b><br>
+
+          {{else if (eq this.status 'Shipped')}}
+          <div>
+            <b style="color: #fa7704;">{{this.status}}</b><br>
+          </div>
+
+          {{else if (eq this.status 'Delivered')}}
+          <div>
+            <b style="color: #0cd327;">{{this.status}}</b><br>
+          </div>
+          {{/if}}
+
+          {{/each}}
+        </td>
+        <td>
+          {{#each this.products}}
+          <a href="/view-products?id={{../this._id}}&&item={{this.item}}" class="btn btn-primary mb-2">View
+            Invoice</a><br>
+          {{/each}}
+        </td>
+        <td>
+          {{#each this.products}}
+          {{#if (eq this.status 'placed')}}
+          <a href="/status-change?id={{../this._id}}&&item={{this.item}}&&st=Cancelled" style="width:5rem;"
+            class="btn btn-danger mb-2" onclick="return confirm('Are you sure you want to cancel this order?')">Cancel
+          </a><br>
+          {{else if (eq this.status 'Shipped')}}
+          <a href="/status-change?id={{../this._id}}&&item={{this.item}}&&st=Cancelled" style="width:5rem;"
+            class="btn btn-danger mb-2" onclick="return confirm('Are you sure you want to cancel this order?')">Cancel
+          </a><br>
+          {{else if (eq this.status 'Delivered')}}
+          <a href="/return-order?id={{../this._id}}&&item={{this.item}}&&st=Return" style="width: 5rem;"
+            class="btn btn-danger mt-2"
+            onclick="return confirm('Are you sure you want to return this order?')">Return</a><br>
+          {{/if}}
+          {{/each}}
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>

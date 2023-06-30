@@ -1,0 +1,262 @@
+<style>
+  .body {
+    position: fixed;
+    width: auto;
+    height: auto;
+
+  }
+
+  .product-card {
+    display: block;
+
+  }
+
+  .options-box {
+    position: absolute;
+    top: 82px;
+    left: 0px;
+    background-color: #a09d9d;
+    padding: 20px;
+    border: 1px solid #adabab;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    height: 86.6%;
+
+  }
+
+  .options-box label {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .product-container {
+    margin-left: 0px;
+    /* Adjust the margin as per your requirement */
+    overflow-y: scroll;
+    max-height: 540px;
+  }
+
+
+  .options-box label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+
+  .options-box input[type="text"],
+  .options-box select {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 12px;
+  }
+
+  .options-box select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 20px;
+    background: url('down-arrow.png') no-repeat right center;
+  }
+
+  .options-box select::-ms-expand {
+    display: none;
+  }
+</style>
+
+<body>
+
+  <div class="options-box">
+    <label for="searchInput">Search:</label>
+    <input type="text" id="searchInput" placeholder="Search" oninput="searchProducts(this.value)">
+
+    <label class="mt-2" for="categoryFilter">Filter by category:</label>
+    <select id="categoryFilter" class="form-select" onchange="filterByCategory(this.value)">
+      <option value="">All Categories</option>
+      {{#each category}}
+      <option value="{{this.Category}}">{{this.Category}}</option>
+      {{/each}}
+      <!-- Add more options for different categories -->
+    </select>
+
+    <label class="mt-2" for="sortPrice">Sort by price:</label>
+    <select id="sortPrice" class="form-select" onchange="sortProductsByPrice(this.value)">
+      <option value="asc">Low to High</option>
+      <option value="desc">High to Low</option>
+    </select>
+  </div>
+
+
+  <div class="product-container vh-500">
+    <section style="background-color: #eee;">
+      <div class="container py-5">
+        <div class="row justify-content-center mb-3">
+          {{#each products}}
+            {{#if this.Stock}} 
+                 <div class="col-md-12 col-xl-10 mt-3 product-card {{this.Category}}" style="margin-left: 100px;">
+            <div class="card shadow-0 border rounded-3">
+              <h5 id="cat">{{this.Category}}</h5>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0">
+                    <div class="bg-image hover-zoom ripple rounded ripple-surface">
+                      <img src="/product-category-images/{{this.picPath}}" class="card-img-top" style="width: 10rem;" alt="..."
+                        class="w-100" />
+                      <a href="#!">
+                        <div class="hover-overlay">
+                          <div class="mask" style="background-color: rgba(253, 253, 253, 0.15);"></div>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-lg-6 col-xl-6">
+                    <h5>{{this.Name}}</h5>
+                    <div class="d-flex flex-row">
+                      <div class="text-danger mb-1 me-2">
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                      </div>
+                    </div>
+                    <p class="text-truncate mb-4 mb-md-0">
+                      {{this.Description}}
+                    </p>
+                  </div>
+                  <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start">
+                    <div class="d-flex flex-row align-items-center mb-1">
+                      <h4 class="mb-1 me-1">{{this.MRP}}</h4>
+                    </div>
+                    <h6 class="text-success">Free shipping</h6>
+                    <div class="d-flex flex-column mt-4">
+                      <a href="/productdetails/{{this._id}}" class="btn btn-primary btn-sm" type="button">Details</a>
+                      <a class="btn btn-outline-primary btn-sm mt-2" type="button">Add to wishlist</a>
+                      <button onclick="addToCart('{{this._id}}')" class="btn btn-outline-primary btn-sm mt-2">Add to
+                        Cart</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+            {{/if}}
+          {{/each}}
+
+        </div>
+        <div class="pagination-container" style="margin-left: 145px;">
+          <ul class="pagination">
+
+          </ul>
+        </div>
+      </div>
+
+    </section>
+  </div>
+
+  <script>
+
+    function filterByCategory(category) {
+      const productCards = document.getElementsByClassName('product-card');
+      for (let card of productCards) {
+        if (category === '' || card.classList.contains(category)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      }
+    }
+
+    function sortProductsByPrice(sortOrder) {
+      const productContainer = document.querySelector('.row.justify-content-center.mb-3');
+      const productCards = Array.from(productContainer.getElementsByClassName('product-card'));
+
+      productCards.sort((a, b) => {
+        const priceA = parseFloat(a.querySelector('.mb-1.me-1').textContent);
+        const priceB = parseFloat(b.querySelector('.mb-1.me-1').textContent);
+
+        if (sortOrder === 'asc') {
+          return priceA - priceB;
+        } else {
+          return priceB - priceA;
+        }
+      });
+
+      productCards.forEach(card => productContainer.appendChild(card));
+    }
+
+    function searchProducts(searchTerm) {
+      const productCards = document.getElementsByClassName('product-card');
+      for (let card of productCards) {
+        const name = card.querySelector('h5').textContent.toLowerCase();
+        const description = card.querySelector('.text-truncate').textContent.toLowerCase();
+        if (name.includes(searchTerm.toLowerCase()) || description.includes(searchTerm.toLowerCase())) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      }
+    }
+
+    // Define the number of products per page
+    const productsPerPage = 10;
+
+    // Initialize the current page variable
+    let currentPage = 1;
+
+    // Function to show products based on the current page
+    function showProductsOnPage(pageNumber) {
+      const productCards = document.getElementsByClassName('product-card');
+
+      // Calculate the start and end indexes of the products to be displayed
+      const startIndex = (pageNumber - 1) * productsPerPage;
+      const endIndex = pageNumber * productsPerPage;
+
+      // Iterate through the product cards and show/hide them based on the current page
+      for (let i = 0; i < productCards.length; i++) {
+        if (i >= startIndex && i < endIndex) {
+          productCards[i].style.display = 'block';
+        } else {
+          productCards[i].style.display = 'none';
+        }
+      }
+    }
+
+    // Function to generate the pagination links dynamically
+    function generatePaginationLinks() {
+      const productCards = document.getElementsByClassName('product-card');
+      const totalPages = Math.ceil(productCards.length / productsPerPage);
+      const paginationContainer = document.querySelector('.pagination');
+
+      // Clear the existing pagination links
+      paginationContainer.innerHTML = '';
+
+      // Generate the new pagination links
+      for (let i = 1; i <= totalPages; i++) {
+        const li = document.createElement('li');
+        li.classList.add('page-item');
+        li.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${i})">${i}</a>`;
+        paginationContainer.appendChild(li);
+      }
+    }
+
+    // Function to handle page navigation
+    function goToPage(pageNumber) {
+      currentPage = pageNumber;
+      showProductsOnPage(currentPage);
+
+      // Add/remove active class to the pagination links
+      const paginationLinks = document.getElementsByClassName('page-link');
+      for (let link of paginationLinks) {
+        if (Number(link.textContent) === currentPage) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      }
+    }
+
+    // Show the products and generate pagination links on the initial page load
+    showProductsOnPage(currentPage);
+    generatePaginationLinks();
+
+  </script>
+</body>

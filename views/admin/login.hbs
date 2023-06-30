@@ -1,0 +1,36 @@
+
+<body>
+  <div class="row" style="display: flex; justify-content: start; align-items: center; height: 100vh;">
+    <div class="col-md-6 m-auto">
+      <div id="formContent" style="text-align: center;">
+        <!-- Tabs Titles -->
+
+        <!-- Login Form -->
+        <div id="formFooter">
+          <h2 style="color: #333;">Administrator</h2>
+        </div>
+        <form action="/admin/adminLogin" method="POST">
+          {{#if loginErr}}
+          <p class="error fadeIn second" style="color: rgb(145, 39, 1);">Invalid Username or Password</p>
+          {{/if}}
+          <div class="">
+            <input type="text" id="login" class="fadeIn second" name="Email" placeholder="Admin email" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd; margin-bottom: 10px;">
+          </div>
+          <div>
+            <input type="password" id="password" class="fadeIn third" name="Password" placeholder="Password" autocomplete="off" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd; margin-bottom: 10px;">
+            <input type="submit" class="fadeIn fourth" value="Log In" style="background-color: #333; color: #fff; padding: 10px; border: none; border-radius: 5px; cursor: pointer;">
+          </div>
+        </form>
+
+        <!-- Remind Password -->
+        <div id="formFooter" style="margin-top: 20px;">
+          <a href="/login" style="text-decoration: none;"><button class="glow-on-hover" type="button" style="background-color: #ddd; color: #333; padding: 10px; border: none; border-radius: 5px; cursor: pointer;">I am a user</button></a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</body>
+
+
+

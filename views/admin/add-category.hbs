@@ -1,0 +1,63 @@
+
+
+<style>
+  .responsive-section {
+  margin-left: 5rem;
+  padding: 30px;
+}
+
+@media (max-width:  992px) {
+  .responsive-section {
+    margin-left: 0;
+  }
+}
+
+</style>
+
+<section class="responsive-section">
+  <div class="container mt-4">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="text-center">Add category</h2>
+          </div>
+          <div class="card-body">
+            {{#if catError}}
+            <p style="color: red;">{{catError}}</p>
+            {{/if}}
+            <form action="/admin/add-category" method="POST" id="myForm" enctype="multipart/form-data">
+
+              <div class="form-group">
+                <label for="Category">Category</label>
+                <input type="text" name="Category" id="Category" class="form-control">
+              </div>
+
+              <div class="form-group">
+                <label for="Image">Image</label>
+                <input type="file" name="Image" class="form-control">
+              </div>
+
+              <button type="submit" class="btn btn-outline-success mt-4">Submit</button>
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+document.getElementById('myForm').addEventListener('submit', function(event) {
+  // Get the input value and convert it to uppercase
+  var inputValue = document.getElementById('Category').value;
+  var uppercasedValue = inputValue.toUpperCase();
+  
+  // Update the input value with the uppercase value
+  document.getElementById('Category').value = uppercasedValue;
+});
+
+
+
+</script>

@@ -1,0 +1,82 @@
+
+
+<style>
+    .responsive-section {
+        margin-left: 15rem;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    .card {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-title {
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 992px) {
+        .responsive-section {
+            margin-left: 0;
+        }
+    }
+</style>
+
+<section class="responsive-section">
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title text-center">Edit product</h2>
+                        <form action="/admin/edit-product/{{product._id}}" method="POST"
+                            enctype="multipart/form-data">
+
+                            <div class="form-group">
+                                <label for="Name">Name</label>
+                                <input type="text" name="Name" value="{{product.Name}}" class="form-control">
+                            </div>
+
+                              <div class="dropdown">
+                                <label for="category">Category:</label>
+                                <select name="Category" class="form-control" required>
+                                    <option value="{{product.Category}}">{{product.Category}}</option>
+                                    {{#each category}}
+                                    <option>{{this.Category}}</option>
+                                    {{/each}}
+                                    <!-- Add more options as needed -->
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Description">Description</label>
+                                <input type="text" name="Description" value="{{product.Description}}"
+                                    class="form-control">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="MRP">Price</label>
+                                <input type="number" name="MRP" value="{{product.MRP}}" class="form-control" min="1" step="1" required>
+                            </div>
+
+                             <label for="description">Stock:</label>
+                            <input type="number" name="Stock" value="{{product.Stock}}" id="stock" class="form-control" min="1" step="1"   required>
+
+                            <div class="form-group">
+                                <label for="Image">Image</label>
+                                <img src="/product-category-images/{{product.picPath}}" alt=""
+                                    style="width: 100px;height:auto">
+                                <input type="file" name="Image" class="form-control"  accept="Image/*">
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profile Picture Upload</title>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 20% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 300px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        #preview {
+            width: 200px;
+            height: 200px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+    </style>
+    <script>
+        function openModal() {
+            var modal = document.getElementById('modal');
+            modal.style.display = 'block';
+        }
+        
+        function closeModal() {
+            var modal = document.getElementById('modal');
+            modal.style.display = 'none';
+        }
+        
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var preview = document.getElementById('preview');
+                preview.src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+        
+        function uploadPicture() {
+            // Perform upload actions here
+            closeModal();
+        }
+    </script>
+</head>
+<body>
+    <button onclick="openModal()">Open Modal</button>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeModal()" style="float: right; cursor: pointer;">&times;</span>
+            <h1>Profile Picture Upload</h1>
+            <input type="file" accept="image/*" onchange="previewImage(event)">
+            <img id="preview" alt="Preview">
+            <br>
+            <button onclick="uploadPicture()">Upload</button>
+        </div>
+    </div>
+</body>
+</html>

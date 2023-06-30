@@ -1,0 +1,55 @@
+
+<body>
+  <section class=" d-flex align-items-center" style="background-color: #ffffff;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        <div class="card shadow-lg mt-5 rounded-4" style="background-color: rgb(178, 181, 181);">
+          <div class="card-body p-4">
+            <h1 class="text-center mb-4">Sign In</h1>
+            {{#if loginError}}
+            <p class="text-danger">{{loginError}}</p>
+            {{/if}}
+            {{#if blockError}}
+            <p class="text-danger">{{blockError}}</p>
+            {{/if}}
+            <form action="/login" method="post">
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" class="form-control" name="email" required>
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" id="password" class="form-control" name="password" required>
+                <div class="text-end mt-2">
+                  <a href="#!" class="text-decoration-none">Forgot password?</a>
+                </div>
+              </div>
+                 {{#if signupSuccess}}
+                    <script>
+                      document.addEventListener('DOMContentLoaded', function () {
+                        Swal.fire({
+                          title: 'Success!',
+                          text: 'Account Created Successfully',
+                          icon: 'success',
+                          showConfirmButton: true
+                        });
+                      });
+                    </script>
+                    {{/if}}
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg">Login</button>
+              </div>
+            </form>
+            <div class="text-center mt-3">
+              <p>Not a member? <a href="/signup" class="text-decoration-none">Register</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</body>
+
+

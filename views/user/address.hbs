@@ -1,0 +1,259 @@
+<div class="container mt-2">
+  <div class="row">
+    <!-- Previous Address -->
+    <div class="col-xl-4 col-lg-4 mb-4">
+      <div class="card shadow-0 border">
+        <div class="p-4">
+          <h5 class="card-title mb-3 ">Previous Address</h5>
+          <div class="card-body" style="overflow-y: scroll; max-height: 300px;">
+            {{#each userAddresses}}
+            <div class="card mb-3">
+              <div class="card-body">
+                <h4 class="card-title">{{this.address.name}}</h4>
+                <p class="card-text">Address: {{this.address.address}}</p>
+                <h5 class="card-text">Mobile: {{this.address.mobileNo}}</h5>
+                <div class="btn-group d-flex mt-2" role="group" aria-label="Address Actions">
+                  <a href="/use-address?id={{this._id}}" class="btn btn-success">Use</a>
+                  <a href="/delete-delivery-address?id={{this._id}}" class="btn btn-danger">Delete</a>
+                </div>
+              </div>
+            </div>
+            {{/each}}
+          </div>
+          <div class="card-body">
+            <button type="button" class="btn btn-primary" class="btn btn-primary" id="myButton" data-toggle="modal"
+              data-target="#myModal">
+              Add New-Address
+            </button>
+          </div>
+        </div>
+
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Modal Title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form id="modal-form" action="/add-new-address" method="post">
+                  <div class="mb-3">
+                    <label for="fullName" class="form-label">Full Name</label>
+                    <input type="text" id="fullName" name="fullName" class="form-control" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="address" class="form-label">Address</label>
+                    <textarea id="address" name="address" class="form-control" required></textarea>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="zipCode" class="form-label">Zip Code</label>
+                      <input type="text" id="zipCode" name="zipCode" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="mobileNo" class="form-label">Mobile No.</label>
+                      <input type="text" id="mobileNo" name="mobileNo" class="form-control" required>
+                      <input type="text" name="userId" value="{{user._id}}" hidden>
+                    </div>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save changes</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{#if usingAddress}}
+    <div class="col-xl-8 col-lg-8 mb-4">
+      <div class="card shadow-0 border">
+        <div class="p-4">
+          <h5 class="card-title mb-3">Delivery Address</h5>
+          <form id="checkout-form">
+            <div class="mb-3">
+              <label for="fullName" class="form-label">Full Name</label>
+              <input type="text" id="fullName" name="fullName" value="{{usingAddress.address.name}}"
+                class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label for="address" class="form-label">Address</label>
+              <textarea id="address" name="address" class="form-control"
+                required>{{usingAddress.address.address}}</textarea>
+
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="zipCode" class="form-label">Zip Code</label>
+                <input type="text" id="zipCode" name="zipCode" value="{{usingAddress.address.zipCode}}"
+                  class="form-control" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="mobileNo" class="form-label">Mobile No.</label>
+                <input type="text" id="mobileNo" name="mobileNo" value="{{usingAddress.address.mobileNo}}"
+                  class="form-control" required>
+              </div>
+            </div>
+            <div class="col mb-5">
+              <h5 class="card-title mb-3">Total Price</h5>
+             {{#if actAmount}} 
+            <p class="card-text">Total: ₹ {{actAmount}}</p>
+            {{/if}}
+            <p class="card-text">Amount to be Paid: ₹ {{user.pAmount}}</p>
+            {{#if user.pAmount}}
+              <label for="paymentMethod" class="form-label">Select Payment Method</label>
+              <div class="col-md-5">
+                <label class="radio-inline" for="">
+                  <input type="radio" name="payment-method" value="COD" checked> COD
+                </label>
+              </div>
+              <div class="col-md-5">
+                <label class="radio" for="">
+                  <input type="radio" name="payment-method" value="online"> onlinePayment
+                </label>
+              </div>
+                {{/if}}
+              <input type="text" name="userId" value="{{user._id}}" hidden>
+            </div>
+            <button type="submit" class="btn btn-primary float-right">Check Out</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  {{else}}
+  <div class="col-xl-8 col-lg-8 mb-4">
+    <div class="card shadow-0 border">
+      <div class="p-4">
+        <h5 class="card-title mb-3">Delivery Address</h5>
+        <form id="checkout-form">
+          <div class="mb-3">
+            <label for="fullName" class="form-label">Full Name</label>
+            <input type="text" id="fullName" name="fullName" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="address" class="form-label">Address</label>
+            <textarea id="address" name="address" class="form-control" required></textarea>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="zipCode" class="form-label">Zip Code</label>
+              <input type="text" id="zipCode" name="zipCode" class="form-control" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="mobileNo" class="form-label">Mobile No.</label>
+              <input type="text" id="mobileNo" name="mobileNo" class="form-control" required>
+            </div>
+          </div>
+          <div class="col mb-5">
+            <h5 class="card-title mb-3">Total Price</h5>
+              {{#if actAmount}} 
+            <p class="card-text">Total: ₹ {{actAmount}}</p>
+            {{/if}}
+            <p class="card-text">Amount to be Paid: ₹ {{user.pAmount}}</p>
+            {{#if user.pAmount}}
+            <label for="paymentMethod" class="form-label">Select Payment Method</label>
+            <div class="col-md-5">
+              <label class="radio-inline" for="">
+                <input type="radio" name="payment-method" value="COD" checked> COD
+              </label>
+            </div>
+            <div class="col-md-5">
+              <label class="radio" for="">
+                <input type="radio" name="payment-method" value="online"> onlinePayment
+              </label>
+            </div>
+            {{/if}}
+            <input type="text" name="userId" value="{{user._id}}" hidden>
+          </div>
+          <button type="submit" class="btn btn-primary float-right">Check Out</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+{{/if}}
+</div>
+</div>
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  $("#checkout-form").submit(((e) => {
+    e.preventDefault()
+ 
+    $.ajax({
+      url: '/delivery-address',
+      method: 'post',
+      data: $('#checkout-form').serialize(),
+      success: (response) => {
+        Swal.fire({
+          title: 'Success!',
+          text: 'order placed successfully',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            if (response.codSuccess) {
+              location.href = '/order-succesful';
+            } else {
+              razorpayPayment(response);
+            }
+          }
+        })
+      }
+    })
+  }))
+
+  function razorpayPayment(order) {
+    var options = {
+      "key": "rzp_test_iyylIT7Y6TskoN", // Enter the Key ID generated from the Dashboard
+      "amount": order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+      "currency": "INR",
+      "name": "Fast-Fit Pvt.Ltd", //your business name
+      "description": "Test Transaction",
+      "image": "https://example.com/your_logo",
+      "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+      "handler": function (response) {
+
+        verifyPayment(response, order)
+      },
+      "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
+        "name": "Gaurav Kumar", //your customer's name
+        "email": "gaurav.kumar@example.com",
+        "contact": "9000090000"  //Provide the customer's phone number for better conversion rates 
+      },
+      "notes": {
+        "address": "Razorpay Corporate Office"
+      },
+      "theme": {
+        "color": "#3399cc"
+      }
+    };
+    var rzp1 = new Razorpay(options);
+    rzp1.open();
+  }
+  function verifyPayment(payment, order) {
+    $.ajax({
+      url: '/verify-payment',
+      data: {
+        payment,
+        order
+      },
+      method: 'post',
+      success: (response) => {
+        if (response.status) {
+          location.href = '/order-succesful'
+        } else {
+          alert("payment Failed")
+        }
+      }
+    })
+  }
+</script>

@@ -1,0 +1,91 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+
+  <style>
+  
+
+    .profile-image {
+      background-color: antiquewhite;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+      margin-right: 15px;
+    }
+    #icon {
+  color: red; 
+}
+  </style>
+</head>
+
+
+  <header style="background-color: black;">
+    <nav class="navbar navbar-expand-lg navbar-light bg-drak text-white">
+      <button onclick="history.back()" style="background-color: black; color: white;">Go Back</button>
+      <a class="navbar-brand ml-5" href="#">
+        <h1 class="text-white">FastFit</h1>
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon" id="icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+              <li class="nav-item active">
+                   <a class="nav-link text-white" href="/">
+                      <h4>Home</h4> <span class="sr-only">(current)</span>
+                  </a>
+              </li>
+            
+              <li class="nav-item active">
+                  <a class="nav-link text-white" href="/all-products">
+                      <h4>Products</h4> <span class="sr-only">(current)</span>
+                  </a>
+              </li>
+              {{#if user}}
+              <li class="nav-item">
+                  <a class="nav-link text-white" href="/cart">
+                      <h4>Cart<span class="badge badge-success" id="cart-count">{{user.cartCount}}</span></h4>
+                  </a>
+              </li>
+              {{/if}}
+              {{#if user}}
+              <li class="nav-item">
+                  <a class="nav-link text-white" href="/user-orders">
+                      <h4>Orders</h4>
+                  </a>
+              </li>
+                {{/if}}
+          </ul>
+            {{#if user}}
+            {{#if user.profileImage}}
+           <a href="/user-profile"><img src="images/{{user.profileImage}}" alt="Profile Image" class="profile-image"></a>
+              {{else}}
+          <a href="/user-profile"><img src="images/LinkedIn_profile_photo_sample_3-300x300.jpg" alt="Profile Image" class="profile-image"></a>
+            {{/if}}
+            {{else}}
+            {{/if}}
+          <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle " type="button" id="dropdownMenuButton"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  {{#if user}}
+                    {{user.username}}
+                  {{else}}
+                    Account
+                  {{/if}}
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                {{#if user}}
+                  <a class="dropdown-item" href="/logout">Log-Out</a>
+                {{else}}
+                  <a class="dropdown-item" href="/login">Log-In</a>
+                {{/if}}
+                <a class="dropdown-item" href="/signup">Register</a>
+              </div>
+          </div>
+      </div>
+    </nav>
+  </header>

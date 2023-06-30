@@ -1,0 +1,99 @@
+<style>
+  .responsive-section {
+    margin-left: 15rem;
+    padding-right: 15px;
+    padding-left: 15px;
+  }
+
+  @media (max-width: 992px) {
+    .responsive-section {
+      margin-left: 0;
+    }
+  }
+</style>
+
+<section class="responsive-section">
+  <div class="container">
+
+    <div class="row  mt-5">
+      <a href="/admin/add-coupon" class="btn btn-success ml-auto mr-3 mt-3">Add coupon</a>
+    </div>
+
+    <table class="table  mt-4" id="userTable">
+      <thead class="thead-dark">
+        <tr>
+
+          <th scope="col">Coupon Code</th>
+          <th scope="col">Expiry Date</th>
+          <th scope="col">Discount </th>
+          <th scope="col">Min Purchase</th>
+          <th scope="col">Max Amount</th>
+          <th scope="col">Actions</th>
+
+        </tr>
+      </thead>
+
+      <tbody>
+
+        {{#each response}}
+        <tr>
+          <th scope="row">{{this.couponCode}}</th>
+          <td>{{this.expiryDate}}</td>
+          <td>{{this.discount}}</td>
+          <td>{{this.minPurchase}}</td>
+          <td>{{this.maxAmount}}</td>
+          <td>
+            <a href="/admin/edit-coupon/{{this._id}}" class="btn btn-success">Edit</a>
+            <i type="submit" class="btn btn-dark"
+              onclick="deleteItem('{{this._id}}')">Delete</i>
+          </td>
+        </tr>
+        {{/each}}
+
+      </tbody>
+    </table>
+  </div>
+</section>
+<script>
+  function deleteItem(id) {
+    // Display SweetAlert confirmation dialog
+    Swal.fire({
+      icon: 'warning',
+      title: 'Are you sure?',
+      text: 'This action cannot be undone.',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // User clicked "Yes, delete it!"
+        // Perform the deletion or make an Ajax request here
+        // Example: Delete the item using an Ajax request
+        $.ajax({
+          url: '/admin/delete-coupon',
+          type: 'POST',
+          data: { id: id },
+          success: function(response) {
+            // Handle success response
+            // Display success message or perform other actions
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: 'The item has been successfully deleted.',
+              showConfirmButton: false,
+              timer: 1500
+            }).then(() => {
+              // Reload the page or perform any other actions after the alert is closed
+              location.reload(); // Example: Reload the page
+            });
+          },
+          error: function(error) {
+            // Handle error response
+            console.log(error);
+            // Display an error message or perform other error handling
+          }
+        });
+      }
+    });
+  }
+</script>

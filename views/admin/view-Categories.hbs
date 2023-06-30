@@ -1,0 +1,65 @@
+<style>
+  
+    .responsive-section {
+        margin-left: 15rem;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    @media (max-width: 992px) {
+        .responsive-section {
+            margin-left: 0;
+        }
+    }
+</style>
+
+<section class="responsive-section">
+    <div class="container">
+        <div class="row">
+
+            <a href="/admin/add-category" class="btn btn-success ml-auto mt-3">Add category</a>
+        </div>
+        <table class="table mt-4" id="productsTable">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Category</th>
+                    <th>Image</th>
+                    <th>Option</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each category}}
+                <tr>
+
+                    <td>{{this.Category}}</td>
+
+                    <td><img style="width:50px; height:50px" src="/product-category-images/{{this.picPath}}" alt="">
+                    </td>
+
+                    <td><a href="/admin/edit-category/{{this._id}}" class="btn btn-primary">Edit</a>
+
+                        {{#if this.isHide}}
+
+                        <a href="/admin/un-hide-category/{{this._id}}" class="btn btn-success"
+                            onclick="return confirm('Are you want to hide {{this.category}}?')">Show</a>
+                    </td>
+                    {{else}}
+
+                    <a href="/admin/hide-category/{{this._id}}" class="btn btn-danger"
+                        onclick="return confirm('Are you want to show {{this.category}}?')">Hide</a>
+                    {{/if}}
+                </tr>
+                {{/each}}
+
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<script>
+    $(function () {
+        $('#productsTable').DataTable({
+            "dom": '<"top"i>rt<"bottom"flp><"clear">',
+        });
+    })
+</script>

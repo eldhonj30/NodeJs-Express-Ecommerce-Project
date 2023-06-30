@@ -1,0 +1,99 @@
+<style>
+  
+  .coupon-form {
+    width: 400px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    margin: 0 auto;
+    margin-top: 5px;
+  }
+
+  .coupon-form label {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .coupon-form input[type="text"],
+  .coupon-form input[type="number"],
+  .coupon-form textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+  }
+
+  .coupon-form input[type="submit"] {
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  .coupon-form input[type="submit"]:hover {
+    background-color: #45a049;
+  }
+</style>
+
+
+<div class="coupon-form">
+  <form  id="coupon-form">
+    <label for="coupon_code">Coupon Code:</label>
+    <input type="text" id="couponCode" value="{{coupon.couponCode}}" name="couponCode" required>
+
+    <label for="expiry_date">Expiry Date:</label>
+    <input type="date" id="expiryDate" value="{{coupon.expiryDate}}" name="expiryDate" required>
+
+    <label for="discount">Discount:</label>
+    <input type="number" id="discount" value="{{coupon.discount}}" name="discount" required>
+
+    <label for="max_usage">Min Purchase:</label>
+    <input type="number" id="minPurchase" value="{{coupon.minPurchase}}" name="minPurchase" required>
+
+    <label for="max_usage">Max Amount:</label>
+    <input type="number" id="maxAmount" value="{{coupon.maxAmount}}" name="maxAmount" required>
+    <input type="text" value="{{coupon._id}}" name="id" hidden>
+
+    <input type="submit" value="Add Coupon" >
+  </form>
+</div>
+
+<script>
+ 
+    $("#coupon-form").submit(function(event) {
+  event.preventDefault(); // Prevent form submission
+
+  // Perform Ajax request
+  $.ajax({
+    url: "/admin/edit-coupon",
+    type: "POST",
+    data: $('#coupon-form').serialize(),
+    success: function(response) {
+      // Display SweetAlert success message
+      Swal.fire({
+        icon: "success",
+        title: "Coupon edited",
+        text: "The coupon has been successfully edited.",
+        showConfirmButton: false,
+        timer: 1500
+      }).then(function() {
+       location.href = '/admin/view-coupon'; 
+      });
+    },
+    error: function(error) {
+      // Handle Ajax error
+      console.log(error);
+      // Display an error message or perform other error handling
+    }
+  });
+});
+
+
+</script>
+
+

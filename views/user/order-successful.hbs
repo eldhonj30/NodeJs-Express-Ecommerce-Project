@@ -1,0 +1,38 @@
+<head>
+  <title>Order Successful</title>
+  <!-- Add your CSS stylesheets and other meta tags here -->
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+</head>
+
+<body>
+  {{#if coupon}}
+  <script>
+    Swal.fire({
+      icon: 'success',
+      title: 'Coupon Alert!',
+      text: 'You have received a coupon ',
+      toast: true,
+      position: 'center',
+      showConfirmButton: true
+    });
+  </script>
+  {{/if}}
+  <div class="container">
+    <h1>Order Successful</h1>
+    <p>Thank you for your order!</p>
+    <p>Your order has been placed successfully. Here are the details:</p>
+
+    <!-- Display order details here -->
+    <ul>
+      <li>Order Number: <span id="orderNumber"> #Or{{order._id}}</span></li>
+      <li>Order Date: <span id="orderDate"> {{order.pDate}}</span></li>
+      <li>Total Amount: <span id="orderTotal"> {{order.totalAmount}}</span></li>
+      <!-- Add more order details if needed -->
+    </ul>
+
+    <p>We will send you a confirmation email shortly.</p>
+    <p>If you have any questions or concerns, please contact our customer support.</p>
+    <p>Thank you for shopping with us!</p>
+  </div>
+
+</body>

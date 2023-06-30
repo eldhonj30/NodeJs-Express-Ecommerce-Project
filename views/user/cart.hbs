@@ -1,0 +1,317 @@
+{{#if emptyError}}
+
+
+<style>
+  .container {
+    margin-top: 5rem;
+    max-width: 400px;
+    padding: 40px;
+    background-color: #d9dfdb;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  h1 {
+    font-size: 24px;
+    color: #333;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  h3 {
+    font-size: 18px;
+    color: #666;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .btn-container {
+    text-align: center;
+  }
+
+  .btn1 {
+    display: inline-block;
+    background-color: #00cf00;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn:hover {
+    background-color: #45a049;
+  }
+</style>
+
+<body>
+  <div class="container">
+
+    <div id="cart-content">
+      <h3>Your cart is empty</h3>
+      <div class="btn-container">
+        <a href="/all-products" class="btn1">Browse All Products</a>
+      </div>
+    </div>
+  </div>
+</body>
+
+
+
+
+{{else}}
+
+<section class="h-100" style="background-color: #eee;">
+  <div class="container h-100 w-100 py-5">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-15">
+        <div class="row">
+          <div class="col-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h3 class="fw-normal mb-0 text-black">{{user.username}}'s Cart</h3>
+              {{!-- <div>
+                <p class="mb-0"><span class="text-muted">Sort by:</span> <a href="#!" class="text-body">price <i
+                      class="fas fa-angle-down mt-1"></i></a></p>
+              </div> --}}
+            </div>
+            {{#each products}}
+            <div class="card rounded-3 mb-4">
+              <div class="card-body p-4">
+                <div class="row d-flex justify-content-between align-items-center">
+                  <div class="col-md-2 col-lg-2 col-xl-2">
+                    <img src="/product-category-images/{{this.product.picPath}}" class="img-fluid rounded-3"
+                      alt="Cotton T-shirt">
+                  </div>
+                  <div class="col-md-3 col-lg-3 col-xl-3">
+                    <p class="lead fw-normal mb-2">{{this.product.Name}}</p>
+                    <p><span class="text-muted">Size: </span> M <span class="text-muted">Color: </span>Grey</p>
+                  </div>
+                  <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                    <h5 class="mb-0"> {{this.product.MRP}} </h5>
+                  </div>
+                  <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
+                    <button type="submit" class="btn btn-link px-2"
+                      onclick="changeQuantity('{{this._id}}','{{this.product._id}}','{{../user._id}}',-1)">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                    <span id="{{this.product._id}}" class="form-control form-control-sm"> {{this.quantity}} </span>
+                    <button type="submit" class="btn btn-link px-2"
+                      onclick="changeQuantity('{{this._id}}','{{this.product._id}}','{{../user._id}}',1)">
+                      <i class="fas fa-plus"></i>
+                    </button>
+                  </div>
+                  <div class="col-md-1 col-lg-1 col-xl-1 text-end">
+                    <a href="" onclick="removeProduct('{{this._id}}','{{this.product._id}}')" class="text-danger"><i
+                        class="fas fa-trash fa-lg"></i></a>
+                  </div>
+                  <span id="out-of-stock"></span>
+                </div>
+              </div>
+            </div>
+            {{/each}}
+          </div>
+          <div class="col-4  mt-5 pt-2">
+            <div class="card rounded-3 mb-4">
+              <div class="card-body p-4">
+                <div class="row mb-4">
+
+                </div>
+                <div class="row">
+                  <div class="col">
+                    {{#if user.couponCodes}}
+                    <div class="form-outline">
+                      
+                      <form action="">
+
+                        <label for="coupon">Discount code:</label>
+                        <select onchange="couponDetails(this.value)" class="form-control input-md" id="coupon" name="coupon">
+                          <option>Choose From below</option>
+                          {{#each user.couponCodes}}
+                          <option  value="{{this.coupon}}" >{{this.coupon}}</option>
+
+                          {{/each}}
+                           
+                        </select>
+                         <p id="info"></p>
+                        <div class="row mt-3">
+                          <div class="col">
+                            <button type="button" onclick="applyCoupon()"
+                              class="btn btn-outline-warning btn-md btn-block">Apply</button>
+                          </div>
+                        </div>
+                      </form>
+                      {{/if}}
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div class="wallet-container">
+                    <div class="balance">
+                      <h5 class="ml-3 mt-4 db-flex"> Wallet Balance: ₹ <span class="balance" id="wallet"
+                          name="wallet">{{user.walletAmount}}</span>
+                      </h5>
+                      <button type="button" onclick="walletApply('{{user._id}}', '{{user.walletAmount}}')"
+                        class="btn btn-outline-dark btn-md btn-block">Use Wallet</button>
+                    </div>
+                  </div>
+                </div>
+                <hr style="color: #333;">
+                <div class="col mt-2">
+                  <p>Cart Total: ₹<span class="ml-3" id="cartTotal"> {{user.pAmount}}</span></p>
+                  <p>Discount Price: ₹<span id="discount" value=""> 0</span></h5>
+                   <p> Amount to be Paid: ₹<span  class="" id="totalPrice"> {{user.pAmount}}</span></p>
+                </div>
+
+                <div class="row mt-4">
+                  <div class="col">
+
+                    <a href="/delivery-address" type="button" class="btn btn-warning btn-lg btn-block">Proceed to
+                      Pay</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{/if}}
+
+<script>
+  function changeQuantity(cartId, proId, userId, count) {
+    let quantity = parseInt(document.getElementById(proId).innerHTML)
+    count = parseInt(count)
+    $.ajax({
+      url: '/change-product-quantity',
+      data: {
+        cart: cartId,
+        user: userId,
+        product: proId,
+        count: count,
+        quantity: quantity
+      },
+      method: 'post',
+      success: (response) => {
+        if (response.removeProduct) {
+          Swal.fire({
+            title: 'Confirmation',
+            text: 'Are you sure you want to remove this product from the cart?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              Swal.fire('Success', 'Product removed from cart', 'success');
+              location.reload();
+            }
+          });
+        } else if(response.err){
+           document.getElementById("out-of-stock").innerHTML = response.err;
+        } else {
+          document.getElementById(proId).innerHTML = quantity + count;
+          document.getElementById('totalPrice').innerHTML = response.total;
+           location.reload();
+        }
+      }
+
+    })
+  }
+
+  function removeProduct(cartId, proId) {
+
+    $.ajax({
+      url: "/remove-product-cart",
+      data: {
+
+        cart: cartId,
+        product: proId
+      },
+      method: 'post',
+      success: (response) => {
+        alert("product removed successfully")
+        location.reload()
+      }
+    })
+  }
+
+  function applyCoupon() {
+    var selectedCoupon = document.getElementById('coupon').value; // Get the selected coupon value
+
+    
+    $.ajax({
+      url: '/apply-coupon',
+      data: {
+        coupon: selectedCoupon
+      },
+      method: 'post',
+      success: (response) => {
+
+        if (response.response) {
+                Swal.fire({
+            icon: 'success',
+            title: 'Coupon Success',
+            text: `Hey congratz ! you recieved ${response.discountAmount}`,
+            toast: true,
+            position: 'center',
+            showConfirmButton: true
+          });
+          document.getElementById('discount').innerHTML = response.discountAmount
+           document.getElementById('totalPrice').innerHTML = response.newTotal
+      
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Coupon Expired',
+            text: 'The coupon has expired.',
+            toast: true,
+            position: 'center',
+            showConfirmButton: true
+          });
+
+
+        }
+      }
+    })
+  }
+
+  function walletApply(userId, wallet) {
+
+    $.ajax({
+      url: '/use-wallet',
+      method: 'POST',
+      data: {
+        userId: userId,
+        wallet: wallet
+      },
+      success: function (response) {
+        document.getElementById('totalPrice').innerHTML = response.total
+        document.getElementById('wallet').innerHTML = response.walletBalance
+      }
+    })
+  }
+  function couponDetails(coupon){
+   
+    $.ajax({
+      url:'/getCoupon',
+      data:{
+        coupon:coupon
+      },
+      method:'POST',
+      success:(response) =>{
+ console.log(response)
+        if(response){
+document.getElementById('info').innerHTML = `You will recieve ${response.discount}% or ${response.maxAmount} discount`
+        } else {
+         document.getElementById('info').innerHTML = ""
+        }
+       
+       
+      }
+
+    })
+  }
+</script>

@@ -1,0 +1,185 @@
+<style>
+    .responsive-section {
+        margin-left: 15rem;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    @media (max-width: 992px) {
+        .responsive-section {
+            margin-left: 0;
+        }
+    }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<section class="responsive-section">
+    <div class="container">
+        <div class="row">
+            <!-- Add product button triggers the modal -->
+            <button type="button" class="btn btn-success ml-auto mt-3" data-toggle="modal"
+                data-target="#addProductModal">Add products</button>
+        </div>
+        <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addProductModalLabel">Add Product</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="/admin/add-products" method="POST" enctype="multipart/form-data">
+                            <label for="">Name:</label>
+                            <input type="text" name="Name" class="form-control" required>
+
+
+                            <div class="dropdown">
+                                <label for="category">Category:</label>
+                                <select name="Category" class="form-control" required>
+                                    <option value="">Select a category</option>
+                                    {{#each category}}
+                                    <option>{{this.Category}}</option>
+                                    {{/each}}
+                                    <!-- Add more options as needed -->
+                                </select>
+                            </div>
+
+                            <label for="">Price:</label>
+                            <input type="number" name="MRP"  id="price" class="form-control" min="1" step="1" onkeyup="validatePrice()" required>
+                             <span id="price-error"></span><br>
+                            <label for="description">Description:</label>
+                            <input type="text" name="Description" class="form-control" required>
+
+                             <label for="description">Stock:</label>
+                            <input type="number" name="Stock" id="stock" class="form-control" min="1" step="1" onkeyup="validateStock()"  required>
+                            <span id="stock-error"></span><br>
+                            <label for="">Image:</label>
+                            <input type="file" name="Image" class="form-control-file" accept="image/*" multiple
+                                required>
+
+                            <button type="submit" class="btn btn-primary mt-2">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table mt-4" id="productsTable">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Title</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Price</th>
+                         <th scope="col">Stock</th>
+                        <th scope="col">Image</th>
+                        <th scope="col" colspan="2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each products}}
+                    <tr>
+                        <td>{{this.Name}}</td>
+                        <td>{{this.Category}}</td>
+                        <td>{{this.Description}}</td>
+                        <td>{{this.MRP}}</td>
+                          <td>{{this.Stock}}</td>
+                        <td><img style="width:50px; height:50px" src="/product-category-images/{{this.picPath}}" alt="">
+                        </td>
+                        <td><a href="/admin/edit-product/{{this._id}}" class="btn btn-primary">Edit</a></td>
+                        <td><a href="/admin/delete-product/{{this._id}}" class="btn btn-danger"
+                                onclick="return confirm('Are you sure you want to delete {{this.Name}}?')">Delete</a>
+                        </td>
+                    </tr>
+                    {{/each}}
+
+                </tbody>
+            </table>
+            <div>
+                {{#if err}}
+                <h3 class="d-flex justify-content-center" style="color: rgb(0, 0, 0);">{{err}}</h3>
+                {{/if}}
+                <div class="d-flex justify-content-start">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                          
+                            <li class="page-item"><a class="page-link" href="/admin?p=1">1</a></li>
+                            <li class="page-item"><a class="page-link" href="/admin?p=2">2</a></li>
+                            <li class="page-item"><a class="page-link" href="/admin?p=3">3</a></li>
+                          
+                        </ul>
+                </div>
+                <div class="d-flex flex-row-reverse">
+                    <form class="form-inline" action="/admin/" method="post">
+                        <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search by category"
+                            aria-label="Search">
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                </div>
+                {{#if prosuccess}}
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Product added successfully',
+                            icon: 'success',
+                            showConfirmButton: true
+                        });
+                    });
+                </script>
+                {{/if}}
+                    {{#if prodelete}}
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Product deleted successfully',
+                            icon: 'success',
+                            showConfirmButton: true
+                        });
+                    });
+                </script>
+                {{/if}}
+                    {{#if proedit}}
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Product edited successfully',
+                            icon: 'success',
+                            showConfirmButton: true
+                        });
+                    });
+                </script>
+                {{/if}}
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+      function validatePrice() {
+
+        var price = document.getElementById("price").value;
+
+        if (price < 0) {
+            document.getElementById('price-error').innerHTML = 'Price must be Positive.';
+            return false;
+        }
+    }
+
+     function validateStock() {
+
+        var stock = document.getElementById("stock").value;
+
+        if (stock < 0) {
+            document.getElementById('stock-error').innerHTML = 'Stock must be Positive.';
+            return false;
+        }
+    }
+
+</script>

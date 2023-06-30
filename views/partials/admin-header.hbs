@@ -1,0 +1,171 @@
+
+ 
+<head>  
+  
+  <meta charset="utf-8">  
+  <meta name="viewport" content="width=device-width, initial-scale=1">  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"> 
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> </script>  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"> </script>  
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"> </script>  
+    
+</head>  
+<style>  
+html {  
+    position: relative;  
+    min-height: 100%;  
+}  
+    body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: #e6e8ed;
+  color: #666666;
+  font-family: "Montserrat", sans-serif;
+} 
+.footer {  
+  position: absolute;  
+  bottom: 0;  
+  width: 100%;  
+  height: 3.5rem;  
+  line-height: 3.5rem;  
+  background-color: #ccc;  
+}  
+.bg-dark {  
+    background-color: #6a9aca!important;  
+}  
+.nav-link:hover {  
+  transition: all 0.4s;  
+}  
+.nav-link-collapse:after {  
+  float: right;  
+  content: '\f067';  
+  font-family: 'FontAwesome';  
+}  
+.nav-link-show:after {  
+  float: right;  
+  content: '\f068';  
+  font-family: 'FontAwesome';  
+}  
+.nav-item ul.nav-second-level {  
+  padding-left: 0;  
+}  
+.nav-item ul.nav-second-level > .nav-item {  
+  padding-left: 20px;  
+}  
+@media (min-width: 992px) {  
+  .sidenav {  
+    position: absolute;  
+    top: 0;  
+    left: 0;  
+    width: 230px;  
+    height: calc(100vh - 3.5rem);  
+    margin-top: 3.5rem;  
+    background: #343a40;  
+    box-sizing: border-box;  
+    border-top: 1px solid rgba(0, 0, 0, 0.3);  
+  }  
+  .navbar-expand-lg .sidenav {  
+    flex-direction: column;  
+  }  
+  .content-wrapper {  
+    margin-left: 230px;  
+  }  
+  .footer {  
+    width: calc(100% - 230px);  
+    margin-left: 230px;  
+  }  
+.nav-item  {
+  color: lightgray; /* Inactive link color */
+}
+
+.nav-item.active  {
+  color: white; /* Active link color */
+}
+
+
+}  
+</style>  
+<body>  
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">  
+  <a class="navbar-brand" href="#"> FastFist-Admin </a>  
+  <button  
+    class="navbar-toggler"  
+    type="button"  
+    data-toggle="collapse"  
+    data-target="#navbarCollapse"  
+    aria-controls="navbarCollapse"  
+    aria-expanded="false"  
+    aria-label="Toggle navigation">  
+    <span class="navbar-toggler-icon"> </span>  
+  </button>  
+  <div class="collapse navbar-collapse" id="navbarCollapse">  
+    <ul class="navbar-nav mr-auto sidenav" id="navAccordion">  
+      <li class="nav-item ">  
+        <a class="nav-link" href="/admin/dash-board"> Dash Board  </a>  
+      </li>  
+      <li class="nav-item">  
+        <a class="nav-link" href="/admin"> All Products </a>  
+      </li>  
+      <li class="nav-item">  
+        <a class="nav-link" href="/admin/view-category"> AllCategory </a>  
+      </li>  
+      <li class="nav-item">  
+        <a class="nav-link" href="/admin/all-users"> All Users </a>  
+      </li>  
+      <li class="nav-item">  
+        <a class="nav-link" href="/admin/orders"> All Orders </a>  
+      </li>  
+      <li class="nav-item">  
+        <a class="nav-link" href="/admin/view-coupon"> All Coupons </a>  
+      </li>  
+       </div> 
+  
+    <form action="/admin/adminLogout" method="get" class="form-inline ml-auto mt-2 mt-md-0">  
+      <button class="btn btn-dark my-2 my-sm-0  ml-auto mt-2 mt-md-0" type="submit">Log Out</button>  
+   </form>
+  
+</nav>  
+  
+{{!-- <footer class="footer">  
+  <div class="container">  
+      <div class="text-center">  
+          <h1> Footer </h1>  
+      </div>  
+  </div>  
+</footer>   --}}
+<script>  
+{{!-- $(document).ready(function() {  
+  $('.nav-link-collapse').on('click', function() {  
+    $('.nav-link-collapse').not(this).removeClass('nav-link-show');  
+    $(this).toggleClass('nav-link-show');  
+  });  
+});  --}}
+
+$(document).ready(function() {
+  $('.nav-item').on('mousedown', function(event) {
+    var $clickedLink = $(this).find('a.nav-link');
+    $('.nav-item').removeClass('active');
+    $clickedLink.addClass('active');
+    
+    // Store the active link information in local storage
+    localStorage.setItem('activeLink', $clickedLink.attr('href'));
+  });
+
+  // Apply the active class on page load
+  var activeLink = localStorage.getItem('activeLink');
+  if (activeLink) {
+    $('.nav-item').removeClass('active');
+    $('a.nav-link[href="' + activeLink + '"]').parent('.nav-item').addClass('active');
+  }
+});
+
+
+</script>  
+</body>  
+
+
+
+
+

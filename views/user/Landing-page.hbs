@@ -1,0 +1,125 @@
+  <body >
+    
+  <style>
+    .banner{
+        height:20rem;
+        background-repeat:no-repeat;
+        background-size:cover;
+        background-image:
+    }
+    .img-fluid{
+        height: 20rem;
+        width: 100rem;
+    }
+    body{
+        background-color: black;
+    }
+ 
+  </style>
+
+  <section>
+
+    <div class="banner">
+       <img class="img-fluid" src="https://img.freepik.com/free-psd/horizontal-banner-template-online-fashion-sale_23-2148585405.jpg?w=826&t=st=1684560704~exp=1684561304~hmac=01e439ca6a72f8f581da1321040b194c1b762454764549c421ecafffbc79535b" alt="" srcset="">
+    </div>
+  
+        <section style="background-color: #eee;" >
+  <div class="text-center container py-5">
+    <h4 class="mt-4 mb-5"><strong>Latest Arrivals</strong></h4>
+
+    <div class="row">
+        {{#each products}}
+      <div class="col-lg-4 col-md-12 mb-4">
+        <div class="card" id="card1" >
+          <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+            <a href="/productdetails/{{this._id}}"><img src="/product-category-images/{{this.picPath}}" class="card-img-top" alt="..."style="width: 12rem; height:12rem" /></a>
+            <a href="#!">
+              <div class="mask">
+                <div class="d-flex justify-content-start align-items-end h-100">
+                  <h5><span class="badge bg-primary ms-2">New</span></h5>
+                </div>
+              </div>
+              <div class="hover-overlay">
+                <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
+              </div>
+            </a>
+          </div>
+          <div class="card-body">
+              <h5 class="card-title mb-3">{{this.Name}}</h5>
+              <p>{{this.Category}}</p>
+            <h6 class="mb-3">{{this.MRP}}</h6>
+          </div>
+        </div>
+      </div>
+        {{/each}}
+      </div>
+
+
+
+      </section>
+
+         <div class="banner">
+       <img class="img-fluid" src="https://img.freepik.com/free-psd/horizontal-banner-template-online-fashion-sale_23-2148585405.jpg?w=826&t=st=1684560704~exp=1684561304~hmac=01e439ca6a72f8f581da1321040b194c1b762454764549c421ecafffbc79535b" alt="" srcset="">
+    </div>
+
+<div class="container mt-5 mb-5">
+    <div class="row m-5 pl-5">
+            {{#each details}}
+            
+            {{#if this.isHide}}
+
+            {{else}}
+        <div class="card m-2">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img src="/product-category-images/{{this.picPath}}" class="img-fluid rounded-start"  style="width: 10rem;height:10rem" alt="...">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">{{this.Category}}</h5>
+                        <p class="card-text"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/if}}
+
+        {{/each}}
+    </div>
+</div>
+
+</section>
+
+</body>
+<script>
+  // Get all the cards
+  const cards = document.querySelectorAll('#card1');
+
+  // Function to set the height of all cards to the maximum height
+  function setCardsHeight() {
+    let maxHeight = 0;
+    cards.forEach(card => {
+      card.style.height = 'auto'; // Reset height to auto to calculate actual content height
+      const cardHeight = card.offsetHeight;
+      if (cardHeight > maxHeight) {
+        maxHeight = cardHeight;
+      }
+    });
+
+    // Set the maximum height to all cards
+    cards.forEach(card => {
+      card.style.height = maxHeight + 'px';
+    });
+  }
+
+  // Call the setCardsHeight function initially and on window resize
+  window.addEventListener('resize', setCardsHeight);
+  setCardsHeight();
+</script>
+
+
+
+
+
+
+

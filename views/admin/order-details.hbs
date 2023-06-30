@@ -1,0 +1,95 @@
+<style>
+    .responsive-section {
+        margin-left: 15rem;
+        margin-top: 5rem;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    @media (max-width: 992px) {
+        .responsive-section {
+            margin-left: 0;
+        }
+    }
+</style>
+
+<body>
+    <section class="responsive-section">
+    <div class="container">
+        <table class="table mt-4" id="userTable">
+            <thead class="thead-dark">
+                <tr>
+
+                    <th scope="col">Order ID </th>
+                    {{!-- <th scope="col">Quantity</th> --}}
+                    <th scope="col">Delivery Adress</th>
+                    <th scope="col">TotalAmount</th>
+                    <th scope="col">Payment Method</th>
+                    <th scope="col">Order Status</th>
+                    <th scope="col">Order Management</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {{#each orderDetails}}
+                <tr>
+                    <th scope="row">#Or{{this._id}}<br> date:{{this.pDate}} </th>
+                    <td>Name:{{this.deliveryDetails.fullName}}<br>Address:{{this.deliveryDetails.address}}</td>
+                    <td>{{this.totalAmount}}</td>
+                    <td>{{this.paymentMethod}}</td>
+                    <td>{{#each this.products}}
+                        {{this.name}}:-
+                        <h6 style="color: orangered;">{{this.status}}</h6> <br>
+                        {{/each}}
+                    </td>
+
+                    <td>
+                        {{#each this.products}}
+
+                        {{#if (eq this.status "placed")}}
+                        <a href="/admin/status-change?id={{../this._id}}&&st=Shipped&&item={{this.item}}" class="btn btn-info">Shipped</a><br>
+                         
+                        <a href="/admin/status-change?id={{../this._id}}&&st=Cancelled&&item={{this.item}}" class="btn btn-danger mt-1"
+                            onclick="return confirm('Are you want to cancel ?')">Cancel</a><br><br>
+                            {{/if}}
+
+                        {{#if (eq this.status "Shipped")}}
+                    
+                        <a href="/admin/status-change?id={{../this._id}}&&st=Delivered&&item={{this.item}}" class="btn btn-success ">Delivered</a><br>
+                         
+                        <a href="/admin/status-change?id={{../this._id}}&&st=Cancelled&&item={{this.item}}" class="btn btn-danger mt-1"
+                            onclick="return confirm('Are you want to cancel ?')">Cancel</a><br><br>
+                            {{/if}}
+                          {{/each}}
+                    </td>
+                </tr>
+                {{/each}}
+
+            </tbody>
+        </table>
+        <div>
+            {{#if err}}
+            <h3 class="d-flex justify-content-center" style="color: rgb(0, 0, 0);">{{err}}</h3>
+            {{/if}}
+            <div class="d-flex justify-content-start">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination">
+                        {{!-- <li class="page-item"><a class="page-link" href="#">Previous</a></li> --}}
+                        <li class="page-item"><a class="page-link" href="/admin/all-users?p=1">1</a></li>
+                        <li class="page-item"><a class="page-link" href="/admin/all-users?p=2">2</a></li>
+                        <li class="page-item"><a class="page-link" href="/admin/all-users?p=3">3</a></li>
+                        {{!-- <li class="page-item"><a class="page-link" href="#">Next</a></li> --}}
+                    </ul>
+            </div>
+            <div class="d-flex flex-row-reverse">
+                <form class="form-inline" action="/admin/all-users/" method="post">
+                    <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search"
+                        aria-label="Search">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                </form>
+            </div>
+            </nav>
+        </div>
+    </div>
+</section>
+</body>

@@ -1,0 +1,161 @@
+
+
+
+
+
+  <style>
+  
+    * {
+    
+      box-sizing: border-box;
+      color:rgb(0, 0, 0);
+    }
+    .image-container {
+      width: 30%;
+      margin: 5% 0 0 5%;
+      
+    }
+    img {
+      max-width: 50%;
+    }
+       body {
+      background-color: rgb(255, 255, 255);
+    }
+    #overlay {
+      display: none;
+      background: url("/product-category-images/{{product.picPath}}");
+      position: absolute;
+      width: 25%;
+      height: 35%;
+      margin-top: 20%;
+      margin-left: 50%;
+      border: 2px solid #464545;
+      z-index: 1000;
+      background-repeat: no-repeat;
+    }
+    #mouse-overlay {
+      cursor: zoom-in;
+      position: absolute;
+      width: 2em;
+      height: 2em;
+      transform: translate(-50%, -50%);
+      background-color: rgb(0, 0, 0);;
+      border-radius: 50%;
+    }
+    .first,.second{
+      height:300px;
+      width:300px;
+      border:1px solid rgb(6, 6, 6);
+      background-image:url("/product-category-images/{{product.picPath}}");
+      background-size:cover;
+      background-repeat:no-repeat;
+      background-position:center;
+    }
+    body
+      display:grid;
+      place-items:center; 
+    .img-container{
+      position: relative;
+      width:30rem;
+      background-color: rgb(0, 0, 0);
+      display: flex;
+       
+    }
+    .first{
+      position: relative;
+      overflow:hidden;
+      left:10rem;
+    }
+    .lens{
+      display:none;
+      position:absolute;
+      width:100px;
+      height:150px;
+      background-color:#8080807d;
+      border:1px solid green;
+      transform:translate(-80%,-80%);
+      pointer-events:none;
+      
+    }
+    .second{
+      position:absolute;
+      display:none;
+      top:6.6rem;
+      left:50rem;
+      background-size: 300% 300%;
+      z-index:11;
+    }
+    .first:hover .lens{
+      display:block;
+      cursor:crosshair;
+    }
+    
+    @media only screen and (max-width: 500px) {
+      .image-container {
+        width: 55%;
+      }
+      #overlay {
+        margin-left: 70%;
+        width: 25%;
+        height: 15%;
+      }
+    
+    }
+  </style>
+  
+  <body>
+<div class="container">
+  <div class="img-container" style="margin-top: 5px;">
+    <div class="first">
+      <span class="lens"></span>
+    </div>
+    <div class="second"></div>
+    <div class="col-md-6" style="margin-left: 35px;">
+      <div class="product p-4">
+        <div class="d-flex justify-content-between align-items-center">
+
+        </div>
+        <div class="mt-4 mb-3"> <span class="text-uppercase text-muted brand"></span>
+          <h5 class="text-uppercase"><strong>{{product.Name}}</strong></h5>
+          <div class="price d-flex flex-row align-items-center"> <span
+              class="act-price"><strong>{{product.MRP}}</strong></span>
+            <div class="ml-2"> <small class="dis-price"></small> <span>17% OFF</span> </div>
+          </div>
+        </div>
+        <p class="about">{{product.Description}}</p>
+        <div class="sizes mt-5">
+
+        </div>
+          <button onclick="addToCart('{{product._id}}')" class="btn btn-danger text-uppercase mr-2 px-4">
+                    Add to Cart
+                  </button>
+        {{!-- <div class="cart mt-4 align-items-center"> <a href="/add-to-cart/{{product._id}}" class="btn btn-danger text-uppercase mr-2 px-4">Add to
+            cart</a> <i class="fa fa-heart text-muted"></i> <i class="fa fa-share-alt text-muted"></i> </div> --}}
+      </div>
+    </div>
+  </div>
+</div>
+
+  </body>
+  <script>
+    const lens = document.querySelector(".lens");
+
+    const first = document.querySelector(".first");
+
+    const second = document.querySelector(".second");
+    first.addEventListener("mousemove", (e) => {
+      second.style.display = "block";
+      var x = e.clientX - e.target.offsetLeft;
+      var y = e.clientY - e.target.offsetTop;
+      lens.style.left = x + "px";
+      lens.style.top = y + "px";;
+      second.style.backgroundPosition = (x - 100) * -3 + "px " + (y - 100) * -3 + "px";
+
+      console.log(second.style.backgroundPosition)
+    })
+
+    first.addEventListener("mouseout", () => {
+      second.style.display = "none";
+    })
+  </script>
+  
