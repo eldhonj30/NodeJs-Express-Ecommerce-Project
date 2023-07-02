@@ -185,31 +185,22 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-  $("#checkout-form").submit(((e) => {
-    e.preventDefault()
- 
-    $.ajax({
-      url: '/delivery-address',
-      method: 'post',
-      data: $('#checkout-form').serialize(),
-      success: (response) => {
-        Swal.fire({
-          title: 'Success!',
-          text: 'order placed successfully',
-          icon: 'success',
-          confirmButtonText: 'OK'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            if (response.codSuccess) {
-              location.href = '/order-succesful';
-            } else {
-              razorpayPayment(response);
-            }
+    $("#checkout-form").submit(((e) => {
+      e.preventDefault()
+
+      $.ajax({
+        url: '/delivery-address',
+        method: 'post',
+        data: $('#checkout-form').serialize(),
+        success: (response) => {
+          if (response.codSuccess) {
+            location.href = '/order-succesful';
+          } else {
+            razorpayPayment(response);
           }
-        })
-      }
-    })
-  }))
+        }
+      })
+    }))
 
   function razorpayPayment(order) {
     var options = {

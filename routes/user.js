@@ -64,6 +64,10 @@ router.post("/login", userController.loginPost);
 
 router.get("/logout", userController.logoutGet);
 
+router.get("/forgot-password-otp",userController.frgtPasswordGet)
+
+router.post("/forgot-password-otp",userController.frgtOtpValidation)
+
 // ************ user Profile ******//
 
 router.get("/user-profile", verifyLogin, userController.userProfileGet);

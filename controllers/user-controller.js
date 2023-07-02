@@ -1,21 +1,18 @@
 const productHelpers = require("../helpers/product-helpers");
 const userHelpers = require("../helpers/user-helpers");
-// const alert = require("alert");
 const categoryHelpers = require("../helpers/category-helpers");
 const otpGenerator = require("otp-generator");
 const nodemailer = require("nodemailer");
 const { response } = require("../app");
 const { log } = require("handlebars");
 const couponHelpers = require("../helpers/coupon-helpers");
-var easyinvoice = require('easyinvoice');
-
-
+var easyinvoice = require("easyinvoice");
+var fs = require("fs");
 
 module.exports = {
-  
-  userDetails: async (id) =>{
+  userDetails: async (id) => {
     let userLive = await userHelpers.userDetails(id);
-    return userLive
+    return userLive;
   },
 
   cartCount: async (id) => {
@@ -44,16 +41,16 @@ module.exports = {
       });
     });
   },
-  catWiseProducts : async (req,res)=>{
-    let catgry = req.query.cat
-    let user = req.session.user
-    let Products = await productHelpers.getCatPrdcts(catgry)
-    res.render("user/category-products",{Products,user,guest:true})
+  catWiseProducts: async (req, res) => {
+    let catgry = req.query.cat;
+    let user = req.session.user;
+    let Products = await productHelpers.getCatPrdcts(catgry);
+    res.render("user/category-products", { Products, user, guest: true });
   },
 
   signupGet: (req, res) => {
-    let otpError  = req.session.otpError
-    res.render("user/signup", { loginError: req.session.loginError,otpError });
+    let otpError = req.session.otpError;
+    res.render("user/signup", { loginError: req.session.loginError, otpError });
 
     req.session.loginError = false;
   },
@@ -65,9 +62,8 @@ module.exports = {
         res.redirect("/signup");
       }
       if (response != 1) {
-    
-        req.session.details = req.body
-        const email = req.body.email
+        req.session.details = req.body;
+        const email = req.body.email;
         let otp = otpGenerator.generate(6, {
           digits: true,
           alphabets: false,
@@ -75,7 +71,7 @@ module.exports = {
           specialChars: false,
         });
 
-        req.session.signupOtp = otp
+        req.session.signupOtp = otp;
         const transporter = nodemailer.createTransport({
           host: "smtp.ethereal.email",
           port: 587,
@@ -103,36 +99,46 @@ module.exports = {
     });
   },
   otpPost: (req, res) => {
-    let otp = req.session.signupOtp
-    let userOtp = req.body.otp
-    let userDetails = req.session.details
-    let date = new Date()
-    userDetails.date = date
-    console.log(userDetails)
-    if(otp === userOtp){
-      userHelpers.addUser(userDetails).then((response)=>{
+    let otp = req.session.signupOtp;
+    let userOtp = req.body.otp;
+    let userDetails = req.session.details;
+    let date = new Date();
+    userDetails.date = date;
+    console.log(userDetails);
+    if (otp === userOtp) {
+      userHelpers.addUser(userDetails).then((response) => {
         req.session.userOtp = null;
-        req.session.signupSuccess = true
+        req.session.signupSuccess = true;
         res.redirect("/login");
-      })
+      });
     } else {
-       req.session.otpError = true;
-        res.redirect("/signup");
-      }
+      req.session.otpError = true;
+      res.redirect("/signup");
+    }
   },
   loginGet: (req, res) => {
     if (req.session.user) {
       res.redirect("/");
     } else {
-      let signupSuccess = req.session.signupSuccess
+      let signupSuccess = req.session.signupSuccess;
+      let otperror = req.session.otpError;
+      let usererror = req.session.invaliduser;
+      let paswrdchange = req.session.paswrdchange;
       res.render("user/login", {
         loginError: req.session.loginError,
         blockError: req.session.blockError,
-        guest: true,signupSuccess
+        guest: true,
+        signupSuccess,
+        otperror,
+        usererror,
+        paswrdchange
       });
       req.session.loginError = false;
       req.session.blockError = false;
       req.session.signupSuccess = false;
+      req.session.otpError = false;
+      req.session.paswrdchange = false;
+      req.session.invaliduser = false;
     }
   },
   loginPost: (req, res) => {
@@ -153,6 +159,62 @@ module.exports = {
     req.session.destroy();
     res.redirect("/");
   },
+  frgtPasswordGet: (req, res) => {
+    let email = req.query.email;
+    req.session.email = email;
+    let otp = otpGenerator.generate(6, {
+      digits: true,
+      alphabets: false,
+      upperCase: false,
+      specialChars: true,
+    });
+    req.session.frgtOtp = otp;
+    const transporter = nodemailer.createTransport({
+      host: "smtp.ethereal.email",
+      port: 587,
+      auth: {
+        user: "lurline.harvey51@ethereal.email",
+        pass: "NCZt8ZmHaJrA6M6YdE",
+      },
+    });
+    const mailOptions = {
+      from: "lurline.harvey51@ethereal.email",
+      to: email,
+      subject: "OTP for sign up",
+      text: `Your OTP is ${otp}`,
+    };
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        res.status(500).send({ message: "Error sending OTP email" });
+        client.close();
+        return;
+      }
+    });
+    res.render("user/forgot-password");
+  },
+  frgtOtpValidation: async (req, res) => {
+    let userotp = req.body.otp;
+    let otp = req.session.frgtOtp;
+    let email = req.session.email;
+    let password = req.body.newPassword;
+
+    if (userotp == otp) {
+      let user = await userHelpers.isUserExist(email);
+      let id = user._id;
+      if (user) {
+        userHelpers.resetPassword(id, password);
+         req.session.paswrdchange = true;
+         req.session.email = false;
+        res.redirect("/login");
+      } else {
+        req.session.invaliduser = true;
+        res.redirect("/login");
+      }
+    } else {
+      req.session.otpError = true;
+      res.redirect("/login");
+    }
+  },
 
   // ************ user Profile ******//
 
@@ -160,9 +222,9 @@ module.exports = {
     let userId = req.session.user._id;
     let user = await userHelpers.userDetails(userId);
     let userAddresses = await userHelpers.getUserAddress(userId);
-    let success = req.session.pchange
+    let success = req.session.pchange;
     res.render("user/user-profile", { user, userAddresses, success });
-    req.session.pchange = false
+    req.session.pchange = false;
   },
   addAddressPost: (req, res) => {
     let userId = req.body.userId;
@@ -182,13 +244,13 @@ module.exports = {
     let item = req.query.item;
     userHelpers.cancelOrder(id, status, item);
 
-      let order = await userHelpers.getOrder(id)
-      if(order.paymentMethod === "online" || order.paymentMethod === null){
-        let amount = order.totalAmount
-        let userId = req.session.user._id
-        userHelpers.addAmountWallet(amount,userId)
-      } 
-    
+    let order = await userHelpers.getOrder(id);
+    if (order.paymentMethod === "online" || order.paymentMethod === null) {
+      let amount = order.totalAmount;
+      let userId = req.session.user._id;
+      userHelpers.addAmountWallet(amount, userId);
+    }
+
     res.redirect("/user-orders");
   },
   returnOrder: async (req, res) => {
@@ -198,37 +260,35 @@ module.exports = {
     let userId = req.session.user._id;
     userHelpers.cancelOrder(id, status, item);
 
-    let order = await userHelpers.getOrder(id) 
-    let amount = order.totalAmount
-    userHelpers.addAmountWallet(amount,userId)
+    let order = await userHelpers.getOrder(id);
+    let amount = order.totalAmount;
+    userHelpers.addAmountWallet(amount, userId);
 
     res.redirect("/user-orders");
   },
   changePasswordGet: (req, res) => {
     let user = req.session.user;
     let id = req.query.id;
-    req.session.pswError = false
+    req.session.pswError = false;
     res.render("user/password-change", { id, user });
-   
   },
   changePasswordPost: (req, res) => {
- 
     let id = req.body.Id;
     let newPassword = req.body.newPassword;
     let oldPassword = req.body.currentPassword;
     userHelpers
       .changePassword(id, newPassword, oldPassword)
       .then((response) => {
-        req.session.pchange = true
+        req.session.pchange = true;
         res.redirect("/user-profile");
       })
       .catch((err) => {
         let user = req.session.user;
         console.log(err);
-       req.session.pswError = true
-       let error = req.session.pswError
+        req.session.pswError = true;
+        let error = req.session.pswError;
         res.render("user/password-change", { id, user, error });
-        req.session.pswError = false
+        req.session.pswError = false;
       });
   },
   editAddressPost: (req, res) => {
@@ -267,9 +327,9 @@ module.exports = {
     if (products.length) {
       let total = await userHelpers.getTotalAmount(user._id);
       req.session.user.pAmount = total;
-      user.pAmount = total
-      req.session.usedCoupon = null
-      res.render("user/cart", { products, user});
+      user.pAmount = total;
+      req.session.usedCoupon = null;
+      res.render("user/cart", { products, user });
     } else {
       req.session.cartEmptyError = "Your Cart is Empty !";
       let emptyError = req.session.cartEmptyError;
@@ -279,74 +339,69 @@ module.exports = {
 
   applyCouponPost: async (req, res) => {
     let couponCode = req.body.coupon;
-   
+
     const currDate = new Date();
-    let endDate
+    let endDate;
     let userCoupon = await couponHelpers.applyCoupon(couponCode);
-    if(userCoupon && !req.session.usedCoupon){
-
+    if (userCoupon && !req.session.usedCoupon) {
       endDate = new Date(userCoupon.expiryDate);
-      
-    if (endDate > currDate) {
-     
-      let  total = req.session.user.pAmount
-      let response = {}
 
-      req.session.usedCoupon = userCoupon.couponCode;
-      response.response = true;
-      let discountAmount = ((total * userCoupon.discount)/100)
+      if (endDate > currDate) {
+        let total = req.session.user.pAmount;
+        let response = {};
 
-      if(discountAmount < userCoupon.maxAmount){
-        response.discountAmount = discountAmount
-        response.newTotal =  (total- discountAmount)
-        req.session.user.pAmount =  (total- discountAmount)
+        req.session.usedCoupon = userCoupon.couponCode;
+        response.response = true;
+        let discountAmount = (total * userCoupon.discount) / 100;
+
+        if (discountAmount < userCoupon.maxAmount) {
+          response.discountAmount = discountAmount;
+          response.newTotal = total - discountAmount;
+          req.session.user.pAmount = total - discountAmount;
+        } else {
+          response.discountAmount = userCoupon.maxAmount;
+          response.newTotal = total - userCoupon.maxAmount;
+          req.session.user.pAmount = total - userCoupon.maxAmount;
+        }
+
+        res.json(response);
       } else {
-        response.discountAmount = userCoupon.maxAmount
-        response.newTotal = total - userCoupon.maxAmount
-        req.session.user.pAmount = total - userCoupon.maxAmount
+        res.json({ response: false });
       }
-    
-      res.json(response);
-
     } else {
       res.json({ response: false });
     }
-    } else {
-      res.json({response:false})
-    }
   },
-  getCouponDetails: async (req,res) => {
-    let couponCode = req.body.coupon
-    console.log(req.body.coupon)
+  getCouponDetails: async (req, res) => {
+    let couponCode = req.body.coupon;
+    console.log(req.body.coupon);
     let userCoupon = await couponHelpers.applyCoupon(couponCode);
-   
-    res.json(userCoupon)
+
+    res.json(userCoupon);
   },
-  useWalletPost:async(req,res)=>{
-  
+  useWalletPost: async (req, res) => {
     let wallet = req.body.wallet;
-    let Amount = req.session.user.pAmount
-    let balance 
-    let walletBalance 
-    if(wallet > Amount){
+    let Amount = req.session.user.pAmount;
+    let balance;
+    let walletBalance;
+    if (wallet > Amount) {
       balance = 0;
-      walletBalance = Math.abs(Amount-wallet);
+      walletBalance = Math.abs(Amount - wallet);
     } else {
-      balance = Math.abs(Amount-wallet);
-      walletBalance = 0
+      balance = Math.abs(Amount - wallet);
+      walletBalance = 0;
     }
     req.session.user.actAmount = Amount;
     req.session.user.pAmount = balance;
-    req.session.user.walletBalance = walletBalance
-    req.session.walletApply=true;
+    req.session.user.walletBalance = walletBalance;
+    req.session.walletApply = true;
 
-    let response={}
+    let response = {};
     response.total = balance;
-    response.walletBalance = walletBalance
-    res.json(response)
-   
+    response.walletBalance = walletBalance;
+    res.json(response);
   },
-  
+
   addToCartGet: (req, res) => {
     userHelpers.addToCart(req.params.id, req.session.user._id).then(() => {
       res.json({ status: true });
@@ -354,19 +409,17 @@ module.exports = {
   },
 
   chngPrdctQntyPost: async (req, res) => {
-    
-    let stock = await productHelpers.getStock(req.body)
- 
-    if(stock.Stock >= req.body.quantity){
+    let stock = await productHelpers.getStock(req.body);
+
+    if (stock.Stock >= req.body.quantity) {
       userHelpers.changeProductQuantity(req.body).then(async (response) => {
         response.total = await userHelpers.getTotalAmount(req.body.user);
         res.json(response);
       });
     } else {
-      let response = {err:"out of sock"}
-      res.json(response)
+      let response = { err: "out of sock" };
+      res.json(response);
     }
-   
   },
 
   removeProductCartPost: (req, res) => {
@@ -383,7 +436,12 @@ module.exports = {
     let actAmount = req.session.user.actAmount;
     let userAddresses = await userHelpers.getUserAddress(user._id);
     let usingAddress = await userHelpers.getOneAddress(addId);
-    res.render("user/address", { userAddresses, user, usingAddress, actAmount });
+    res.render("user/address", {
+      userAddresses,
+      user,
+      usingAddress,
+      actAmount,
+    });
   },
   addNewAddressPost: (req, res) => {
     let userId = req.body.userId;
@@ -418,15 +476,19 @@ module.exports = {
     let user = req.session.user;
     let product = await productHelpers.getProductDetails(req.params.id);
 
-
     res.render("user/product-details", { product, user, guest: true });
   },
 
-  allProductsGet: async  (req, res) => {
+  allProductsGet: async (req, res) => {
     let user = req.session.user;
-    let category = await categoryHelpers.getAllCategory()
+    let category = await categoryHelpers.getAllCategory();
     productHelpers.getAllProducts().then((products) => {
-      res.render("user/all-products", { products,category, user, guest: true });
+      res.render("user/all-products", {
+        products,
+        category,
+        user,
+        guest: true,
+      });
     });
   },
 
@@ -438,27 +500,25 @@ module.exports = {
     let userAddresses = await userHelpers.getUserAddress(req.session.user._id);
     res.render("user/address", { user, userAddresses, actAmount });
   },
-  
+
   deliveryAddressPost: async (req, res) => {
-   
-    let total 
-    let data = req.body
+    let total;
+    let data = req.body;
     let products = await userHelpers.getCartProductList(req.body.userId);
-    let test = req.session.user.pAmount
-    if(req.session.walletApply){
-      total = req.session.user.actAmount
+    let test = req.session.user.pAmount;
+    if (req.session.walletApply) {
+      total = req.session.user.actAmount;
     } else {
-      total = req.session.user.pAmount
+      total = req.session.user.pAmount;
     }
-    req.session.body = data
-    if(test == 0){
-      let order = await userHelpers.placeOrder(data, products, total)
-      req.session.orderId = order
+    req.session.body = data;
+    if (test == 0) {
+      let order = await userHelpers.placeOrder(data, products, total);
+      req.session.orderId = order;
       res.json({ codSuccess: true });
-    }
-    else if (req.body["payment-method"] === "COD") {
-      let order = await userHelpers.placeOrder(data, products, total)
-      req.session.orderId = order
+    } else if (req.body["payment-method"] === "COD") {
+      let order = await userHelpers.placeOrder(data, products, total);
+      req.session.orderId = order;
       res.json({ codSuccess: true });
     } else {
       userHelpers.generateRazorpay(total).then((response) => {
@@ -467,27 +527,28 @@ module.exports = {
     }
   },
 
-
   verifyPayment: (req, res) => {
     userHelpers
       .verifyPayment(req.body)
-      .then( async () => {
-        let products = await userHelpers.getCartProductList(req.session.user._id);
-        console.log(products)
-        let  data = req.session.body 
-        let total 
-        let order
-        if(req.session.walletApply){
-          total = req.session.user.actAmount
-          order = await userHelpers.placeOrder(data, products, total)
+      .then(async () => {
+        let products = await userHelpers.getCartProductList(
+          req.session.user._id
+        );
+        console.log(products);
+        let data = req.session.body;
+        let total;
+        let order;
+        if (req.session.walletApply) {
+          total = req.session.user.actAmount;
+          order = await userHelpers.placeOrder(data, products, total);
         } else {
-          total = req.session.user.pAmount
-          order = await userHelpers.placeOrder(data, products, total)
+          total = req.session.user.pAmount;
+          order = await userHelpers.placeOrder(data, products, total);
         }
-        
-        req.session.orderId = order
+
+        req.session.orderId = order;
         res.json({ status: true });
-        req.session.data = null
+        req.session.data = null;
       })
       .catch((err) => {
         res.json({ status: false, errMsg: "" });
@@ -498,11 +559,11 @@ module.exports = {
     let user = req.session.user;
     let price = req.session.user.pAmount;
     let amount = req.session.user.walletBalance;
-    let id = req.session.orderId
+    let id = req.session.orderId;
 
-    if(req.session.walletApply){
-      userHelpers.deductAmountWallet(amount,user._id)
-      req.session.walletApply=false;
+    if (req.session.walletApply) {
+      userHelpers.deductAmountWallet(amount, user._id);
+      req.session.walletApply = false;
       req.session.walletBalance = 0;
     }
 
@@ -513,7 +574,7 @@ module.exports = {
       req.session.couponDiscount = false;
     }
 
-    let coupon = await couponHelpers.giveCoupon(price); 
+    let coupon = await couponHelpers.giveCoupon(price);
     if (coupon) {
       let userId = user._id;
       userHelpers.addCouponUser(userId, coupon);
@@ -522,12 +583,11 @@ module.exports = {
     req.session.user.actAmount = 0;
 
     let order = await userHelpers.getOrder(id);
-    
-    productHelpers.changeQuantity(order.products)
+
+    productHelpers.changeQuantity(order.products);
     req.session.orderId = null;
 
-    res.render("user/order-successful", { user, coupon, order }); 
-
+    res.render("user/order-successful", { user, coupon, order });
   },
 
   userOrder: async (req, res) => {
@@ -540,51 +600,72 @@ module.exports = {
     let user = req.session.user;
 
     let orderId = req.query.id;
-  
+
     let order = await userHelpers.getOrder(orderId);
-   
+
     res.render("user/order-details", { user, order });
   },
 
-  dowloadInvoice :async (req, res) => {
+  dowloadInvoice: async (req, res) => {
     try {
-      let id = req.query.k
+      let id = req.query.k;
+
       // Retrieve data from the database
       const customerData = await userHelpers.getOrderData(id); // Replace with your own database query function
-     
-      let invoiceItems = customerData.products
-      console.log(invoiceItems)
-      const invoiceData = {
-        documentTitle: 'Invoice',
 
+      let invoiceItems = customerData.products;
+      var data = {
+        customize: {
+          template: fs.readFileSync("template.html", "base64"), // Must be base64 encoded html
+        },
+        currency: "INR",
+        margintop: 25,
+        marginRight: 25,
+        marginLeft: 25,
+        marginBottom: 25,
+        sender: {
+          company: "Fast Fit Pvt.Ltd",
+          address: "Sample Street 123",
+          zip: "652310",
+          city: "Ernakulam",
+          country: "India",
+        },
         client: {
           company: customerData.deliveryDetails.fullName,
           address: customerData.deliveryDetails.address,
           zip: customerData.deliveryDetails.zipCode,
           phone: customerData.deliveryDetails.mobileNo,
-          
+          country: "India",
         },
-  
-        // Use invoice items from the database
-        products: invoiceItems.map(item => ({
+        information: {
+          // Invoice number
+          number: customerData._id,
+          // Invoice data
+          date: customerData.pDate,
+          // Invoice due date
+          "due-date": "15 days from date of purchase",
+        },
+        products: invoiceItems.map((item) => ({
           quantity: item.quantity,
-          description: item.category,
-          tax: item.tax,
-          price: item.price
-        }))
-      }
-  
-      // Generate the invoice PDF
-      const pdfData = easyinvoice.createInvoice(invoiceData);
-      const fileName = 'invoice.pdf';
-  
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
-      res.send(Buffer.from(pdfData.pdf, 'base64'));
+          description: item.name,
+          price: item.price,
+        })),
+        "bottom-notice": "Kindly pay your invoice within 15 days.",
+        settings: { locale: "en-IN", currency: "INR" },
+      };
+      easyinvoice.createInvoice(data, async function (result) {
+        const pdfBuffer = Buffer.from(result.pdf, "base64");
+
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+          "Content-Disposition",
+          "attachment; filename=invoice.pdf"
+        );
+        res.send(pdfBuffer);
+      });
     } catch (error) {
-      console.error('Error generating invoice:', error);
-      res.status(500).send('An error occurred while generating the invoice');
+      console.error("Error generating invoice:", error);
+      res.status(500).send("An error occurred while generating the invoice");
     }
   },
-  
 };

@@ -11,7 +11,7 @@
         <th scope="col">Total Amount</th>
         <th scope="col">Payment Mode</th>
         <th scope="col">Product & status</th>
-        <th scope="col">Invoice</th>
+        <th scope="col">Product Details</th>
         <th scope="col">Options</th>
       </tr>
     </thead>
@@ -53,10 +53,8 @@
           {{/each}}
         </td>
         <td>
-          {{#each this.products}}
-          <a href="/view-products?id={{../this._id}}&&item={{this.item}}" class="btn btn-primary mb-2">View
-            Invoice</a><br>
-          {{/each}}
+          <a href="/view-products?id={{this._id}}&&item={{this.item}}" class="btn btn-primary mb-2">View
+            Details</a><br>
         </td>
         <td>
           {{#each this.products}}
